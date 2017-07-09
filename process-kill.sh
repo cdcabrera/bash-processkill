@@ -2,18 +2,19 @@
 #
 # chmod it by:
 # $ chmod +x [YOURFILE]
-# If that doesn't work try the below
-# $ chmod 777 [YOURFILE]
 #
 # main()
 #
 {
 
-  while getopts p: option;
+  while getopts p:c: option;
     do
       case $option in
         p)
           PORT=$OPTARG
+        ;;
+        c)
+          STARTSWITH=${OPTARG// }
         ;;
         \?)
           exit 1;
@@ -21,11 +22,29 @@
       esac
   done
 
-  if [ "$PORT" -eq "$PORT" ]; then
+
+  if [ "$PORT" -eq "$PORT" ] 2>/dev/null; then
+
+    lsof -i:$PORT
     echo Killing \":$PORT\"
-    kill $(sudo lsof -t -i:$PORT) || sudo kill $(sudo lsof -t -i:$PORT)
-  else
+    kill $(sudo lsof -t -i:$PORT) || sudo kill $(sudo lsof -t -i:$PORT) || echo Process not found for \":$PORT\"
+
+  elif [ -n "$PORT" ]; then
+
     echo Option should be an int, not \"$PORT\"
+
+  fi
+
+  if [ -z "$PORT" ] && [ -n "$STARTSWITH" ]; then
+
+    lsof -c $STARTSWITH
+    echo Killing process\(es\) starting with \"$STARTSWITH\"
+    kill $(sudo lsof -t -c $STARTSWITH) || sudo kill $(sudo lsof -t -c $STARTSWITH) || echo Process not found for \"$STARTSWITH\"
+
+  elif [ -z "$PORT" ]; then
+
+    echo Option should NOT be an \"empty\" string
+
   fi
 
 }
