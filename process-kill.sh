@@ -10,15 +10,9 @@
   while getopts p:c: option;
     do
       case $option in
-        p)
-          PORT=$OPTARG
-        ;;
-        c)
-          STARTSWITH=${OPTARG// }
-        ;;
-        \?)
-          exit 1;
-        ;;
+        p) PORT=$OPTARG;;
+        c) STARTSWITH=${OPTARG// };;
+        \?)exit 1;;
       esac
   done
 
@@ -26,7 +20,7 @@
   if [ "$PORT" -eq "$PORT" ] 2>/dev/null; then
 
     lsof -i:$PORT
-    echo Killing \":$PORT\"
+    echo Killing port \":$PORT\"
     kill $(sudo lsof -t -i:$PORT) || sudo kill $(sudo lsof -t -i:$PORT) || echo Process not found for \":$PORT\"
 
   elif [ -n "$PORT" ]; then
@@ -48,3 +42,4 @@
   fi
 
 }
+
